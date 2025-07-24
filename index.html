@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bất Ngờ</title>
+    <style>
+        /* CSS chung cho cả hai trang */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', 'Segoe UI', sans-serif;
+        }
+        
+        body {
+            min-height: 100vh;
+            overflow-x: hidden;
+            transition: background 0.5s ease;
+        }
+        
+        /* Trang chúc mừng */
+        .birthday-page {
+            background-color: #ffebee;
+            color: #d32f2f;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 100;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 500px;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            margin: 20px;
+            transform: scale(0.95);
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: scale(1);
+        }
+        
+        .header {
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            color: #d32f2f;
+            margin-bottom: 10px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+        }
+        
+        .age {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #f44336;
+            margin-bottom: 20px;
+        }
+        
+        .message {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            color: #555;
+        }
+        
+        .photo-frame {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            overflow: hidden;
+            border: 5px solid #ffcdd2;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .photo-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, #ff5252, #d32f2f);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            margin-top: 20px;
+            box-shadow: 0 5px 15px rgba(211, 47, 47, 0.4);
+            transition: all 0.3s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(211, 47, 47, 0.6);
+        }
+        
+        /* Trang nhập thông tin */
+        .login-page {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 90;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+        
+        .login-page.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transform: translateY(20px);
+            transition: transform 0.5s ease;
+        }
+        
+        .login-page.active .container {
+            transform: translateY(0);
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+            text-align: left;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 1.1rem;
+        }
+        
+        input {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+        
+        /* Các thành phần chung */
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            opacity: 0;
+            z-index: 1000;
+            pointer-events: none;
+        }
+        
+        .decoration {
+            position: absolute;
+            font-size: 1.5rem;
+            opacity: 0.2;
+            z-index: -1;
+        }
+        
+        .music-control {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #d32f2f;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+        
+        .music-control i {
+            color: white;
+            font-size: 1.2rem;
+        }
+        
+        .message {
+            margin-top: 25px;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .error {
+            background: rgba(255, 0, 0, 0.2);
+            border: 1px solid rgba(255, 0, 0, 0.3);
+        }
+        
+        .success {
+            background: rgba(0, 255, 0, 0.2);
+            border: 1px solid rgba(0, 255, 0, 0.3);
+        }
+        
+        .balloon {
+            position: absolute;
+            width: 40px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 50%;
+            box-shadow: inset -7px -7px 10px rgba(0, 0, 0, 0.1);
+            animation: float 15s infinite ease-in-out;
+            z-index: 1;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        
+        .balloon:hover {
+            transform: scale(1.1);
+        }
+        
+        .balloon:before {
+            content: "";
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 15px;
+            background: rgba(255, 255, 255, 0.7);
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); }
+            100% { transform: translateY(-100px) rotate(360deg); }
+        }
+        
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .age {
+                font-size: 1.5rem;
+            }
+            
+            .photo-frame {
+                width: 150px;
+                height: 150px;
+            }
+            
+            .container {
+                padding: 30px 20px;
+            }
+            
+            .music-control {
+                width: 45px;
+                height: 45px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Trang chúc mừng sinh nhật -->
+    <div class="birthday-page" id="birthdayPage">
+        <div class="decoration" style="top: 10%; left: 10%;">🎈</div>
+        <div class="decoration" style="top: 80%; left: 15%;">🎂</div>
+        <div class="decoration" style="top: 20%; right: 10%;">🎁</div>
+        <div class="decoration" style="top: 70%; right: 15%;">🎊</div>
+        
+        <div class="card">
+            <div class="header">
+                <h1>Chúc Mừng Sinh Nhật!</h1>
+                <div class="age">15 Tuổi</div>
+            </div>
+            
+            <div class="photo-frame">
+                <img src="https://marketplace.canva.com/Q0qbY/MAFJGJQ0qbY/1/tl/canva-birthday-cake-with-candle-glyph-icon-MAFJGJQ0qbY.png" alt="Ảnh sinh nhật">
+            </div>
+            
+            <div class="message">
+                <p>Chúc bạn có một ngày sinh nhật thật tuyệt vời!</p>
+                <p>Mong rằng năm mới sẽ mang đến cho bạn thật nhiều niềm vui, sức khỏe và thành công!</p>
+            </div>
+            
+            <button class="btn" id="showConfettiBtn">Bấm để chúc mừng</button>
+            <button class="btn" id="goToLoginBtn" style="margin-top: 10px; background: linear-gradient(45deg, #4CAF50, #2E7D32);">Nhập thông tin</button>
+        </div>
+    </div>
+    
+    <!-- Trang nhập thông tin -->
+    <div class="login-page" id="loginPage">
+        <!-- Balloons for decoration -->
+        <div class="balloon" style="left: 10%; animation-delay: 0s; background: rgba(255, 107, 129, 0.7);"></div>
+        <div class="balloon" style="left: 20%; animation-delay: 2s; background: rgba(255, 206, 107, 0.7);"></div>
+        <div class="balloon" style="left: 30%; animation-delay: 4s; background: rgba(107, 255, 116, 0.7);"></div>
+        <div class="balloon" style="left: 70%; animation-delay: 1s; background: rgba(107, 178, 255, 0.7);"></div>
+        <div class="balloon" style="left: 80%; animation-delay: 3s; background: rgba(178, 107, 255, 0.7);"></div>
+        <div class="balloon" style="left: 90%; animation-delay: 5s; background: rgba(255, 107, 200, 0.7);"></div>
+        
+        <div class="container">
+            <h1>🎂 Bất Ngờ Sinh Nhật 🎉</h1>
+            <p class="description">Nhập tên thật và ngày sinh nhật của bạn bè để mở bất ngờ đặc biệt!</p>
+            
+            <form id="birthdayForm">
+                <div class="form-group">
+                    <label for="name">Tên thật của bạn bè:</label>
+                    <input type="text" id="name" placeholder="Ví dụ: Tuyết Đầu Buoi" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="birthdate">Ngày sinh nhật:</label>
+                    <input type="date" id="birthdate" required>
+                </div>
+                
+                <button type="submit" class="btn">Mở Bất Ngờ</button>
+            </form>
+            
+            <div id="message" class="message"></div>
+            <div class="attempts-counter" id="attemptsCounter"></div>
+            
+            <footer>
+                Tạo bất ngờ đặc biệt cho người bạn quan trọng ❤️
+            </footer>
+        </div>
+    </div>
+    
+    <div class="music-control" id="musicControl">
+        <i class="fas fa-music"></i>
+    </div>
+    
+    <audio id="bgMusic" loop>
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    </audio>
+    
+    <audio id="celebrationSound">
+        <source src="https://www.soundjay.com/human/sounds/applause-8.mp3" type="audio/mpeg">
+    </audio>
+    
+    <audio id="successSound">
+        <source src="https://www.soundjay.com/human/sounds/applause-8.mp3" type="audio/mpeg">
+    </audio>
+    
+    <audio id="errorSound">
+        <source src="https://www.soundjay.com/buttons/sounds/button-10.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Các biến chung
+            const birthdayPage = document.getElementById('birthdayPage');
+            const loginPage = document.getElementById('loginPage');
+            const showConfettiBtn = document.getElementById('showConfettiBtn');
+            const goToLoginBtn = document.getElementById('goToLoginBtn');
+            const musicControl = document.getElementById('musicControl');
+            const bgMusic = document.getElementById('bgMusic');
+            const celebrationSound = document.getElementById('celebrationSound');
+            let isMusicPlaying = false;
+            
+            // Xử lý nút nhạc nền
+            musicControl.addEventListener('click', function() {
+                if (isMusicPlaying) {
+                    bgMusic.pause();
+                    musicControl.innerHTML = '<i class="fas fa-music"></i>';
+                } else {
+                    bgMusic.play();
+                    bgMusic.volume = 0.3;
+                    musicControl.innerHTML = '<i class="fas fa-pause"></i>';
+                }
+                isMusicPlaying = !isMusicPlaying;
+            });
+            
+            // Tự động phát nhạc khi có tương tác đầu tiên
+            document.body.addEventListener('click', function initMusic() {
+                if (!isMusicPlaying) {
+                    bgMusic.play();
+                    bgMusic.volume = 0.3;
+                    musicControl.innerHTML = '<i class="fas fa-pause"></i>';
+                    isMusicPlaying = true;
+                }
+                document.body.removeEventListener('click', initMusic);
+            }, { once: true });
+            
+            // Hiệu ứng confetti khi click nút
+            showConfettiBtn.addEventListener('click', function() {
+                createConfetti();
+                celebrationSound.play();
+                this.textContent = 'Chúc mừng sinh nhật! 🎉';
+                this.style.background = 'linear-gradient(45deg, #4CAF50, #2E7D32)';
+            });
+            
+            // Chuyển sang trang nhập thông tin
+            goToLoginBtn.addEventListener('click', function() {
+                birthdayPage.style.opacity = '0';
+                birthdayPage.style.pointerEvents = 'none';
+                loginPage.classList.add('active');
+                
+                // Tạo hiệu ứng chuyển trang
+                setTimeout(() => {
+                    birthdayPage.style.display = 'none';
+                }, 500);
+            });
+            
+            // Xử lý form nhập thông tin
+            const form = document.getElementById('birthdayForm');
+            const messageDiv = document.getElementById('message');
+            const attemptsCounter = document.getElementById('attemptsCounter');
+            const successSound = document.getElementById('successSound');
+            const errorSound = document.getElementById('errorSound');
+            
+            // Thông tin của bạn bè (thay bằng thông tin thực tế)
+            const friendName = "Trần Minh Tuyết"; // Thay bằng tên thật của bạn bè
+            const friendBirthdate = "2010-07-25"; // Thay bằng ngày sinh thực tế (YYYY-MM-DD)
+            const redirectUrl = "https://happybirthdaydeargift.vercel.app/?websiteId=68821ca1378f628cbebc813d"; // Thay bằng URL bạn muốn chuyển hướng đến
+            
+            let attempts = 0;
+            
+            // Kiểm tra nếu có lưu số lần thử trước đó
+            if (localStorage.getItem('birthdayAttempts')) {
+                attempts = parseInt(localStorage.getItem('birthdayAttempts'));
+            }
+            updateAttemptsCounter();
+            
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const nameInput = document.getElementById('name').value.trim();
+                const birthdateInput = document.getElementById('birthdate').value;
+                
+                // Reset message
+                messageDiv.style.display = 'none';
+                
+                // Kiểm tra thông tin
+                if (nameInput.toLowerCase() === friendName.toLowerCase() && birthdateInput === friendBirthdate) {
+                    // Thành công
+                    attempts++;
+                    localStorage.setItem('birthdayAttempts', attempts);
+                    showSuccess();
+                    createConfetti();
+                    successSound.play();
+                    
+                    // Chuyển hướng sau 3 giây
+                    setTimeout(() => {
+                        window.location.href = redirectUrl;
+                    }, 3000);
+                } else {
+                    // Thất bại
+                    attempts++;
+                    localStorage.setItem('birthdayAttempts', attempts);
+                    updateAttemptsCounter();
+                    showError();
+                    errorSound.play();
+                }
+            });
+            
+            function updateAttemptsCounter() {
+                attemptsCounter.textContent = `Số lần thử: ${attempts}`;
+            }
+            
+            function showError() {
+                messageDiv.className = 'message error';
+                messageDiv.innerHTML = 'Thông tin không chính xác! Địt mẹ mày là ai?.';
+                messageDiv.style.display = 'block';
+                
+                // Hiệu ứng rung
+                form.style.animation = 'shake 0.5s';
+                setTimeout(() => {
+                    form.style.animation = '';
+                }, 500);
+                
+                // Thêm CSS cho hiệu ứng rung
+                const style = document.createElement('style');
+                style.innerHTML = `
+                    @keyframes shake {
+                        0%, 100% {transform: translateX(0);}
+                        10%, 30%, 50%, 70%, 90% {transform: translateX(-10px);}
+                        20%, 40%, 60%, 80% {transform: translateX(10px);}
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+            
+            function showSuccess() {
+                messageDiv.className = 'message success';
+                messageDiv.innerHTML = 'Thông tin chính xác! Đang chuyển hướng đến bất ngờ...';
+                messageDiv.style.display = 'block';
+            }
+            
+            function createConfetti() {
+                const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
+                const container = document.body;
+                
+                for (let i = 0; i < 200; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.left = Math.random() * 100 + 'vw';
+                    confetti.style.top = '-10px';
+                    confetti.style.width = Math.random() * 10 + 5 + 'px';
+                    confetti.style.height = Math.random() * 10 + 5 + 'px';
+                    confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                    container.appendChild(confetti);
+                    
+                    const animationDuration = 2000 + Math.random() * 3000;
+                    
+                    const animation = confetti.animate([
+                        { 
+                            transform: `translate(${Math.random() * 20 - 10}px, 0) rotate(0deg)`,
+                            opacity: 1 
+                        },
+                        { 
+                            transform: `translate(${Math.random() * 100 - 50}px, ${window.innerHeight}px) rotate(${Math.random() * 360}deg)`,
+                            opacity: 0 
+                        }
+                    ], {
+                        duration: animationDuration,
+                        easing: 'cubic-bezier(0.1, 0.8, 0.2, 1)'
+                    });
+                    
+                    animation.onfinish = () => confetti.remove();
+                }
+            }
+            
+            // Hiệu ứng khi click vào bong bóng
+            document.querySelectorAll('.balloon').forEach(balloon => {
+                balloon.addEventListener('click', function() {
+                    this.style.animation = 'none';
+                    this.style.transform = 'scale(1.5)';
+                    this.style.opacity = '0';
+                    setTimeout(() => {
+                        this.remove();
+                    }, 300);
+                    
+                    // Phát tiếng nổ bong bóng
+                    const popSound = new Audio('https://www.soundjay.com/mechanical/sounds/bubble-pop-1.mp3');
+                    popSound.volume = 0.3;
+                    popSound.play();
+                });
+            });
+        });
+    </script>
+</body>
+</html>
